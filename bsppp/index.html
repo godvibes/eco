@@ -64,16 +64,23 @@
   .pathline{height:6px;border-radius:99px;background:#3b3b36;margin:4px 0}
   .pathlbl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
     color:var(--ink-soft);font-weight:700;margin:0}
-  .bed{flex:1 1 0;min-width:46px;background:var(--card);border:1px solid #c3cdc2;
+  .bed{position:relative;flex:1 1 0;min-width:46px;background:var(--card);border:1px solid #c3cdc2;
     border-radius:7px;padding:7px 4px;cursor:pointer;font:inherit;color:inherit;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-    min-height:56px;text-align:center;transition:background .12s,border-color .12s,opacity .12s}
+    min-height:66px;text-align:center;overflow:hidden;
+    transition:background .12s,border-color .12s,opacity .12s}
+  /* the plant itself, sitting behind the label. --shot is set per bed. */
+  .bed::before{content:"";position:absolute;inset:0;background-image:var(--shot);
+    background-size:cover;background-position:center;opacity:.6}
+  .bed>*{position:relative}
   .bed:hover,.bed:focus-visible{border-color:var(--green-mid);background:var(--green-pale)}
   .bed .num{font-size:.63rem;font-weight:700;color:#fff;background:var(--green);
-    border-radius:4px;padding:0 5px;font-variant-numeric:tabular-nums;line-height:1.6}
-  .bed .code{font-size:.7rem;font-weight:600;line-height:1.2;max-width:100%}
-  .bed .code b{display:block;font-weight:600}
-  .bed.bloom{background:#fdf1d8;border-color:#e0bd76}
+    border-radius:4px;padding:0 5px;font-variant-numeric:tabular-nums;line-height:1.6;
+    box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+  .bed .code{font-size:.7rem;font-weight:700;line-height:1.2;max-width:100%;
+    text-shadow:0 0 3px #fff,0 0 7px rgba(255,255,255,.95),0 1px 2px rgba(255,255,255,.9)}
+  .bed .code b{display:block;font-weight:700}
+  .bed.bloom{background:#fdf1d8;border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
   .bed.bloom .num{background:var(--gold)}
   .bed.hit{outline:3px solid var(--gold);outline-offset:1px}
   .bed.dim{opacity:.25}
@@ -120,6 +127,13 @@
   .funfact{background:var(--green-pale);border-radius:10px;padding:13px 15px;font-size:.93rem;margin:18px 0 0}
   .credit{border-top:1px solid var(--line);margin-top:24px;padding-top:14px;
     font-size:.82rem;color:var(--ink-soft)}
+
+  .cta{background:var(--green);color:#fff;border-radius:var(--r);padding:26px 24px;text-align:center}
+  .cta h2{margin:0 0 8px;color:#fff}
+  .cta p{margin:0 auto 18px;color:#bcd6c6;max-width:46ch;font-size:.94rem}
+  .btn{display:inline-block;background:var(--gold);color:#241a05;text-decoration:none;
+    font-weight:700;padding:12px 26px;border-radius:9px}
+  .btn:hover,.btn:focus-visible{background:#c8912a}
 
   footer{border-top:1px solid var(--line);padding:28px 0 50px;color:var(--ink-soft);font-size:.85rem}
   footer p{margin:0 0 9px;max-width:66ch}
@@ -170,6 +184,14 @@
     <h2>The 54 species</h2>
     <input class="search" id="search" type="search" placeholder="Search a name, a number, or a map label" autocomplete="off">
     <div class="idx" id="idx"></div>
+  </section>
+
+  <section id="contact">
+    <div class="cta">
+      <h2>Tell us what you see</h2>
+      <p>Photos, suggestions and feedback are all welcome — they help us keep making this the best garden it can be.</p>
+      <a class="btn" id="mail" href="#">Contact us</a>
+    </div>
   </section>
 
 </main>
@@ -466,11 +488,15 @@ $('#seasons').innerHTML=CARE.map(s=>`
     ${s.note?`<p class="note" style="margin-bottom:0">${esc(s.note)}</p>`:''}
   </div>`).join('');
 
+$('#mail').href='mailto:victor.azzaretto@parks.ny.gov?subject='+
+  encodeURIComponent('Pollinator Pathway — Belmont Lake State Park');
+
 /* the bed diagram */
 function bedHTML(c){
   const pl=PLANTS.find(x=>x.n===c.p); if(!pl) return '';
+  const shot=pl.photo?`;--shot:url(thumbs/${pl.n}.jpg)`:'';
   return `<button class="bed${pl.months.includes(MON)?' bloom':''}" data-n="${c.p}"
-    style="flex-grow:${c.w||1}" title="${esc(pl.common)}">
+    style="flex-grow:${c.w||1}${shot}" title="${esc(pl.common)}">
     ${c.tree?'<span class="tree"></span>':''}
     <span class="num">${c.p}</span><span class="code">${
       code(pl).split(' ').map(w=>`<b>${esc(w)}</b>`).join('')}</span></button>`;
@@ -485,6 +511,10 @@ $('#band').innerHTML=MAP.map(s=>`
       </div>`).join('')}</div>
   </div>`).join('');
 $$('.bed').forEach(b=>b.addEventListener('click',()=>openPlant(+b.dataset.n)));
+
+/* Most people meet the garden at the east end, coming in from the parking
+   lot, so open the map there rather than at the far west. */
+requestAnimationFrame(()=>{const w=$('.mapwrap'); if(w) w.scrollLeft=w.scrollWidth});
 
 /* the original drawing, kept below */
 $('#strips').innerHTML=[1,2,3].map(m=>`
