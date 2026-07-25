@@ -49,6 +49,43 @@
     background:repeating-linear-gradient(45deg,#f2f5f1 0 12px,#eaf0e9 12px 24px)}
   .note{font-size:.9rem;color:var(--ink-soft);margin:0 0 16px;max-width:60ch}
 
+  /* the bed diagram */
+  .mapwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+  .band{min-width:1240px;display:flex;gap:14px;align-items:stretch}
+  .sect{display:flex;flex-direction:column;gap:5px}
+  .sect+.sect{border-left:1px dashed var(--line);padding-left:14px}
+  .sect h3{margin:0 0 2px;font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700}
+  .groups{display:flex;gap:10px;align-items:stretch;flex:1 1 auto}
+  .grp{display:flex;flex-direction:column;gap:5px;flex:1 1 auto}
+  .grp h4{margin:0;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+    color:#8a9488;font-weight:700}
+  .row{display:flex;gap:5px;flex:1 1 auto}
+  .pathline{height:6px;border-radius:99px;background:#3b3b36;margin:4px 0}
+  .pathlbl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;margin:0}
+  .bed{flex:1 1 0;min-width:46px;background:var(--card);border:1px solid #c3cdc2;
+    border-radius:7px;padding:7px 4px;cursor:pointer;font:inherit;color:inherit;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    min-height:56px;text-align:center;transition:background .12s,border-color .12s,opacity .12s}
+  .bed:hover,.bed:focus-visible{border-color:var(--green-mid);background:var(--green-pale)}
+  .bed .num{font-size:.63rem;font-weight:700;color:#fff;background:var(--green);
+    border-radius:4px;padding:0 5px;font-variant-numeric:tabular-nums;line-height:1.6}
+  .bed .code{font-size:.7rem;font-weight:600;line-height:1.2;max-width:100%}
+  .bed .code b{display:block;font-weight:600}
+  .bed.bloom{background:#fdf1d8;border-color:#e0bd76}
+  .bed.bloom .num{background:var(--gold)}
+  .bed.hit{outline:3px solid var(--gold);outline-offset:1px}
+  .bed.dim{opacity:.25}
+  .tree{width:13px;height:13px;border-radius:50%;background:#5b4632;flex:0 0 auto}
+  .legend{display:flex;gap:15px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-soft);margin:12px 0 0}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;
+    border:1px solid #e0bd76;background:#fdf1d8;margin-right:5px;vertical-align:0}
+  .legend i.pl{background:var(--card);border-color:#c3cdc2}
+  details.orig{margin-top:22px}
+  details.orig summary{cursor:pointer;font-size:.88rem;color:var(--green-mid);font-weight:600}
+  details.orig .note{margin-top:10px}
+
   /* list */
   .search{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:10px;
     background:var(--card);font:inherit;margin-bottom:12px}
@@ -108,8 +145,25 @@
 
   <section id="map">
     <h2>Garden map</h2>
-    <p class="note">West to east along the path. Scroll each strip sideways. Beds are labelled with the plant's number and the first letters of its scientific name — search that number or those letters below.</p>
-    <div id="strips"></div>
+    <p class="note">Every bed, west to east, keyed by the code painted on it. Tap a bed to open the plant. Gold means it should be in bloom this month. Searching below dims the beds that do not match.</p>
+
+    <p class="pathlbl">Path</p>
+    <div class="pathline"></div>
+    <div class="mapwrap"><div class="band" id="band"></div></div>
+    <div class="pathline"></div>
+    <p class="pathlbl">Path</p>
+
+    <div class="legend">
+      <span><i></i>in bloom now</span>
+      <span><i class="pl"></i>not in bloom</span>
+      <span><span class="tree" style="display:inline-block;vertical-align:-2px"></span> tree</span>
+    </div>
+
+    <details class="orig">
+      <summary>See the original hand-drawn plan</summary>
+      <p class="note">The three sections of the drawing, west to east. Scroll each sideways.</p>
+      <div id="strips"></div>
+    </details>
   </section>
 
   <section id="plants">
@@ -360,6 +414,41 @@ const CARE = [
   {when:'Winter',       months:[12,1,2],  job:'Leave it',  note:'The stalks rest standing. They are habitat for many beneficial insects.'}
 ];
 
+/* The 78 beds, read off the three sections of the drawing.
+   Rows run back (nearest the top path) to front. `w` is a bed's share of its
+   row's width, matching the proportions in the drawing; `tree` marks the beds
+   planted around a tree. This is a diagram of the planting, not a survey —
+   the order, the rows and the neighbours are faithful, the shapes are not. */
+const MAP=[
+ {id:'west',title:'West end',groups:[
+   {label:'By the building',rows:[[{p:2,w:1}],[{p:3,w:1}],[{p:1,w:1}]]},
+   {label:'Entrance',rows:[
+     [{p:4,w:26},{p:5,w:16},{p:6,w:26},{p:32,w:32}],
+     [{p:3,w:26},{p:27,w:32},{p:33,w:42}],
+     [{p:22,w:26},{p:28,w:32},{p:23,w:42}],
+     [{p:24,w:52},{p:29,w:48}],
+     [{p:26,w:50},{p:25,w:50}]]},
+   {label:'Border',rows:[
+     [{p:7,w:40},{p:36,w:18},{p:32,w:42}],
+     [{p:34,w:26},{p:37,w:16},{p:12,w:16},{p:39,w:22},{p:42,w:20}],
+     [{p:31,w:14},{p:10,w:24},{p:35,w:16},{p:38,w:22},{p:41,w:24}]]}]},
+
+ {id:'middle',title:'Middle',groups:[
+   {rows:[
+     [{p:32,w:16},{p:6,w:11},{p:36,w:11},{p:54,w:14},{p:36,w:11},{p:46,w:13},{p:46,w:11},{p:45,w:13}],
+     [{p:39,w:20},{p:42,w:17},{p:43,w:12},{p:42,w:13},{p:45,w:19},{p:6,w:19,tree:true}],
+     [{p:6,w:14},{p:44,w:16},{p:31,w:15},{p:48,w:14},{p:47,w:17},{p:44,w:24}],
+     [{p:41,w:34},{p:40,w:20},{p:43,w:14},{p:49,w:32}]]}]},
+
+ {id:'east',title:'East end',groups:[
+   {rows:[
+     [{p:7,w:16},{p:42,w:10},{p:32,w:22},{p:5,w:19},{p:46,w:16},{p:18,w:17}],
+     [{p:48,w:14},{p:12,w:14},{p:48,w:18},{p:50,w:11},{p:47,w:7},{p:6,w:8,tree:true},{p:9,w:11},{p:22,w:17}],
+     [{p:49,w:13},{p:50,w:11},{p:33,w:9},{p:41,w:30},{p:31,w:12},{p:41,w:10},{p:3,w:15}],
+     [{p:47,w:42},{p:51,w:58}]]},
+   {label:'East',rows:[[{p:52,w:1}]],tall:true}]}
+];
+
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MON=new Date().getMonth()+1;
@@ -377,7 +466,27 @@ $('#seasons').innerHTML=CARE.map(s=>`
     ${s.note?`<p class="note" style="margin-bottom:0">${esc(s.note)}</p>`:''}
   </div>`).join('');
 
-/* map */
+/* the bed diagram */
+function bedHTML(c){
+  const pl=PLANTS.find(x=>x.n===c.p); if(!pl) return '';
+  return `<button class="bed${pl.months.includes(MON)?' bloom':''}" data-n="${c.p}"
+    style="flex-grow:${c.w||1}" title="${esc(pl.common)}">
+    ${c.tree?'<span class="tree"></span>':''}
+    <span class="num">${c.p}</span><span class="code">${
+      code(pl).split(' ').map(w=>`<b>${esc(w)}</b>`).join('')}</span></button>`;
+}
+$('#band').innerHTML=MAP.map(s=>`
+  <div class="sect">
+    <h3>${esc(s.title)}</h3>
+    <div class="groups">${s.groups.map(g=>`
+      <div class="grp"${g.tall?' style="flex:0 0 84px"':''}>
+        ${g.label?`<h4>${esc(g.label)}</h4>`:'<h4>&nbsp;</h4>'}
+        ${g.rows.map(r=>`<div class="row">${r.map(bedHTML).join('')}</div>`).join('')}
+      </div>`).join('')}</div>
+  </div>`).join('');
+$$('.bed').forEach(b=>b.addEventListener('click',()=>openPlant(+b.dataset.n)));
+
+/* the original drawing, kept below */
 $('#strips').innerHTML=[1,2,3].map(m=>`
   <div class="strip">
     <h3>${m===1?'West end':m===3?'East end':'Middle'}</h3>
@@ -413,6 +522,14 @@ function renderIdx(){
     <span class="nm">${esc(p.common)}<em>${esc(p.sci)}</em></span></button>`).join('')
     || '<p class="note">Nothing matches that.</p>';
   $$('#idx button').forEach(b=>b.addEventListener('click',()=>openPlant(+b.dataset.n)));
+
+  /* the same search picks the beds out on the map above */
+  const on=new Set(list.map(p=>p.n));
+  $$('.bed').forEach(b=>{
+    const match=on.has(+b.dataset.n);
+    b.classList.toggle('hit',!!terms.length&&match);
+    b.classList.toggle('dim',!!terms.length&&!match);
+  });
 }
 $('#search').addEventListener('input',renderIdx);
 

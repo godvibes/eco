@@ -11,12 +11,22 @@ outside this repo in `~/pollinator-pathway/`. Photos and maps here are derived f
 Airtable catch-all in `functions/[slug].js` claims every single-segment path and
 returns a hard 404 — same reason `/plant` is excluded.
 
-## Reading the map
+## The map
 
-Beds are labelled with the species number and the first letters of the scientific name
-(`45 Sym cor`). The search box matches either half, so there are no pins to place or
-maintain. Four beds are painted with a label that does not match the species list; the
-`PAINTED` object in `index.html` maps them to the right plant:
+All 78 beds are drawn as a diagram from the `MAP` array — three sections west to east,
+each a set of rows running from the back of the border to the front. Every bed is a
+button keyed by the code painted on it (`45 Sym cor`), so tapping opens the plant, beds
+in bloom this month fill gold on their own, and the species search highlights every bed
+of a match at once. Nothing about it needs maintaining as the seasons turn.
+
+It is a diagram, not a survey. The bed count, their order west to east, which row each
+sits in and who its neighbours are were all read off the drawing and check out
+bed-for-bed. The shapes and exact sizes are approximations — the real beds are irregular
+polygons. The hand-drawn plan is kept on the page under "See the original hand-drawn
+plan" as the accurate record.
+
+Four beds are painted with a label that does not match the species list; the `PAINTED`
+object in `index.html` maps them to the right plant:
 
 | Painted on the map | Actually |
 |---|---|
@@ -33,9 +43,14 @@ species list.
 ## Editing
 
 Everything is in the `<script>` block at the bottom of `index.html`: `PLANTS` (species
-text, transcribed from the source document), `CARE` (four lines, one job per season),
-`PAINTED` (the mislabelled beds). The maintenance section highlights the current season
-by itself; nothing else changes over time.
+text, transcribed from the source document), `MAP` (the 78 beds, by section and row),
+`CARE` (four lines, one job per season), `PAINTED` (the mislabelled beds). The
+maintenance section highlights the current season by itself; nothing else changes over
+time.
+
+To correct a bed, edit its entry in `MAP` — `p` is the species number, `w` is its share
+of the row's width, `tree:true` marks a bed planted around a tree. Adding or moving a
+bed needs no other change.
 
 Every plant page carries a note that the original document did not record its reference
 sources. That should stay until they are found.
