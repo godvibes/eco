@@ -6,27 +6,35 @@
 <title>Pollinator Pathway — Belmont Lake State Park</title>
 <meta name="description" content="The 54 native species planted along the Pollinator Pathway at Belmont Lake State Park.">
 <style>
+  /* Values read off parks.ny.gov and the Belmont Lake park page, July 2026.
+     Proxima Nova is licensed and cannot be loaded here, so the stack is
+     theirs verbatim and falls through to Arial exactly as it does for any
+     visitor without the font. */
   :root{
-    --green:#1d3b2a; --green-mid:#2f5d42; --green-pale:#e4f0e8;
-    --gold:#b3801f;
-    --ink:#1a1f19; --ink-soft:#54604f; --line:#d7ded6;
-    --bg:#fcfbf7; --card:#fff; --r:12px;
+    --green:#233f2b;        /* agency dark green, site header + footer */
+    --green-mid:#2c5234;    /* secondary green */
+    --green-pale:#d9e1dd;   /* pale green-grey, cards and secondary buttons */
+    --gold:#face00;         /* primary button yellow */
+    --ink:#05200c;          /* body and heading text */
+    --ink-soft:#55635a;     /* derived: muted text on the pale green */
+    --line:#c6d0cb;         /* rule and border grey-green */
+    --bg:#fff; --card:#fff; --r:8px;   /* button radius 8px */
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font:17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-  .wrap{max-width:800px;margin:0 auto;padding:0 18px}
+    font:18px/1.5 "Proxima Nova",Arial,sans-serif}
+  .wrap{max-width:900px;margin:0 auto;padding:0 18px}  /* their c-byline measure */
   a{color:var(--green-mid)}
-  h2{font-size:1.25rem;margin:0 0 14px;letter-spacing:-.01em}
+  h2{font-size:1.5rem;font-weight:700;margin:0 0 14px}   /* 24px/700 */
   section{padding:34px 0;border-top:1px solid var(--line)}
 
   header{background:var(--green);color:#fff;padding:34px 0 30px}
   header .park{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
-    color:#8fc0a2;font-weight:700;margin:0 0 10px}
-  header h1{margin:0;font-size:1.9rem;line-height:1.1;letter-spacing:-.02em}
+    color:#a9c6b3;font-weight:700;margin:0 0 10px}
+  header h1{margin:0;font-size:2rem;font-weight:700;line-height:1.1}  /* 32px/700 */
 
-  .hero{aspect-ratio:4/5;max-height:70vh;background:var(--green-pale)}
+  .hero{aspect-ratio:4/5;max-height:62vh;background:var(--green-pale)}
   /* favour the upper third — that is where the butterfly and the tree are */
   .hero img{width:100%;height:100%;object-fit:cover;object-position:center 28%;display:block}
   @media(min-width:620px){.hero{aspect-ratio:16/9}}
@@ -36,12 +44,14 @@
 
   /* care — four seasons, one job each */
   .seasons{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
-  .s{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
-  .s.now{border-color:var(--gold);background:#fdf8ee}
+  /* All four seasons look identical, so the page never goes stale and never
+     needs reissuing. Hover is the only thing that changes. */
+  .s{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:16px 18px;transition:background .12s,border-color .12s}
+  .s:hover{border-color:var(--green-mid);background:var(--green-pale)}
   .s .when{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
     color:var(--ink-soft);font-weight:700;margin:0 0 6px}
-  .s.now .when{color:var(--gold)}
-  .s .job{margin:0;font-size:1.28rem;font-weight:700;letter-spacing:-.01em}
+  .s .job{margin:0;font-size:1.28rem;font-weight:700}
   .s .note{margin:6px 0 0;font-size:.9rem;color:var(--ink-soft)}
 
   /* map */
@@ -123,12 +133,16 @@
   .search{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:10px;
     background:var(--card);font:inherit;margin-bottom:12px}
   .idx{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px}
-  .idx button{background:var(--card);border:1px solid var(--line);border-radius:10px;
-    padding:11px 13px;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:baseline;font:inherit}
-  .idx button:hover,.idx button:focus-visible{border-color:var(--green-mid)}
-  .idx .n{font-size:.74rem;font-weight:700;color:#fff;background:var(--green);
-    border-radius:5px;padding:2px 7px;flex:0 0 auto;font-variant-numeric:tabular-nums}
-  .idx .nm{font-size:.94rem;line-height:1.25}
+  .idx button{position:relative;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--r);padding:10px 44px 10px 10px;text-align:left;cursor:pointer;
+    display:flex;gap:12px;align-items:center;font:inherit;color:inherit;
+    transition:border-color .12s,background .12s}
+  .idx button:hover,.idx button:focus-visible{border-color:var(--green-mid);background:var(--green-pale)}
+  .idx .pic{width:52px;height:52px;flex:0 0 auto;border-radius:6px;object-fit:cover;
+    background:var(--green-pale);display:block}
+  .idx .n{position:absolute;top:8px;right:8px;font-size:.72rem;font-weight:700;color:#fff;
+    background:var(--green);border-radius:5px;padding:1px 6px;font-variant-numeric:tabular-nums}
+  .idx .nm{font-size:.94rem;line-height:1.25;min-width:0}
   .idx .nm em{display:block;color:var(--ink-soft);font-size:.8rem}
 
   /* plant view */
@@ -156,10 +170,12 @@
 
   .cta{background:var(--green);color:#fff;border-radius:var(--r);padding:26px 24px;text-align:center}
   .cta h2{margin:0 0 8px;color:#fff}
-  .cta p{margin:0 auto 18px;color:#bcd6c6;max-width:46ch;font-size:.94rem}
-  .btn{display:inline-block;background:var(--gold);color:#241a05;text-decoration:none;
-    font-weight:700;padding:12px 26px;border-radius:9px}
-  .btn:hover,.btn:focus-visible{background:#c8912a}
+  .cta p{margin:0 auto 18px;color:#cddbd3;max-width:46ch;font-size:.94rem}
+  /* their primary button: #face00, black text, 8px radius, 700 */
+  .btn{display:inline-block;background:var(--gold);color:#000;text-decoration:none;
+    font-weight:700;font-size:.875rem;letter-spacing:.02em;padding:17px 20px 13px;
+    border-radius:var(--r)}
+  .btn:hover,.btn:focus-visible{background:#e0b800}
 
   footer{border-top:1px solid var(--line);padding:28px 0 50px;color:var(--ink-soft);font-size:.85rem}
   footer p{margin:0 0 9px;max-width:66ch}
@@ -467,10 +483,10 @@ const PLANTS = [
 
 /* One job per season. */
 const CARE = [
-  {when:'Spring',       months:[3,4,5],   job:'Cut back',  note:"Last year's stalks come down now."},
-  {when:'Summer',       months:[6,7,8],   job:'Weed'},
-  {when:'Fall',         months:[9,10,11], job:'Prune'},
-  {when:'Winter',       months:[12,1,2],  job:'Leave it',  note:'The stalks rest standing. They are habitat for many beneficial insects.'}
+  {when:'Spring', job:'Cut back', note:"Last year's stalks come down now."},
+  {when:'Summer', job:'Weed',     note:'Remove invasive species like mugwort and bittersweet.'},
+  {when:'Fall',   job:'Prune',    note:'Cut back any plants that are falling over.'},
+  {when:'Winter', job:'Leave it', note:'The stalks rest standing. They are habitat for many beneficial insects.'}
 ];
 
 /* Every bed in the garden, read off page 2 of the source document.
@@ -534,10 +550,10 @@ const code=p=>p.sci.replace(/[^A-Za-z ]/g,'').split(/\s+/).slice(0,2)
 
 /* care */
 $('#seasons').innerHTML=CARE.map(s=>`
-  <div class="s${s.months.includes(MON)?' now':''}">
-    <p class="when">${esc(s.when)}${s.months.includes(MON)?' &middot; now':''}</p>
+  <div class="s">
+    <p class="when">${esc(s.when)}</p>
     <p class="job">${esc(s.job)}</p>
-    ${s.note?`<p class="note" style="margin-bottom:0">${esc(s.note)}</p>`:''}
+    <p class="note" style="margin-bottom:0">${esc(s.note)}</p>
   </div>`).join('');
 
 $('#mail').href='mailto:victor.azzaretto@parks.ny.gov?subject='+
@@ -620,8 +636,10 @@ function renderIdx(){
     return terms.every(t=>h.includes(t));
   });
   $('#idx').innerHTML=list.map(p=>`<button data-n="${p.n}">
-    <span class="n">${p.n}</span>
-    <span class="nm">${esc(p.common)}<em>${esc(p.sci)}</em></span></button>`).join('')
+    ${p.photo?`<img class="pic" src="thumbs/${p.n}.jpg" alt="" loading="lazy">`
+             :`<span class="pic"></span>`}
+    <span class="nm">${esc(p.common)}<em>${esc(p.sci)}</em></span>
+    <span class="n">${p.n}</span></button>`).join('')
     || '<p class="note">Nothing matches that.</p>';
   $$('#idx button').forEach(b=>b.addEventListener('click',()=>openPlant(+b.dataset.n)));
 
