@@ -56,36 +56,40 @@
     background:repeating-linear-gradient(45deg,#f2f5f1 0 12px,#eaf0e9 12px 24px)}
   .note{font-size:.9rem;color:var(--ink-soft);margin:0 0 16px;max-width:60ch}
 
-  /* the bed diagram */
+  /* the bed diagram — one pathway, planted areas either side */
   .mapwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
-  /* max-content so the paths and end labels stretch the full length of the
-     beds, not just to the minimum width */
   .mapinner{min-width:1240px;width:max-content}
-  /* the two paths the border runs between. They scroll with the map, so they
-     stay the full length of the garden and stay aligned with the beds. */
-  .path{height:19px;border-radius:4px;background:#77776d;position:relative;
-    display:flex;align-items:center;margin:7px 0}
-  .path::before{content:"";position:absolute;left:10px;right:10px;top:50%;
-    border-top:2px dashed rgba(255,255,255,.5)}
-  .path span{position:sticky;left:6px;background:#77776d;color:#fff;font-weight:700;
-    font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:1px 7px;
-    border-radius:3px;z-index:1}
-  .ends{display:flex;justify-content:space-between;gap:12px;margin-top:6px;
+  .band{display:flex;flex-direction:column}
+  .side{display:flex;gap:10px;align-items:stretch}
+  .side.north{align-items:flex-end}
+  .grp{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .grp.gap{min-width:0}
+  .grp.tall .row{flex:1 1 auto}
+  .grp h4{margin:0 0 1px;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+    color:#8a9488;font-weight:700;white-space:nowrap;overflow:hidden}
+  .grp.gap h4{visibility:hidden}
+  .row{display:flex;gap:5px}
+  .fill{min-width:0}
+
+  /* the pathway itself: a paved strip with a joint pattern */
+  .path{height:30px;position:relative;display:flex;align-items:center;margin:9px 0;
+    background:#b9b3a6;border-top:2px solid #9d968a;border-bottom:2px solid #9d968a;
+    background-image:linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);
+    background-size:30px 100%}
+  .path span{position:sticky;left:4px;background:#6e675c;color:#fff;font-weight:700;
+    font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;padding:2px 9px;
+    border-radius:3px;z-index:1;white-space:nowrap}
+
+  /* what lies beyond each planted side */
+  .edge{font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;font-weight:700;
+    color:#8a9488;padding:3px 0}
+  .edge:first-child{border-bottom:1px dashed var(--line);margin-bottom:7px;padding-bottom:6px}
+  .edge:last-child{border-top:1px dashed var(--line);margin-top:7px;padding-top:6px}
+
+  .ends{display:flex;justify-content:space-between;gap:12px;margin-top:8px;
     font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
     color:var(--ink-soft);font-weight:700}
-  .band{display:flex;gap:14px;align-items:stretch}
-  .sect{display:flex;flex-direction:column;gap:5px}
-  .sect+.sect{border-left:1px dashed var(--line);padding-left:14px}
-  .sect h3{margin:0 0 2px;font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;
-    color:var(--ink-soft);font-weight:700}
-  .groups{display:flex;gap:10px;align-items:stretch;flex:1 1 auto}
-  .grp{display:flex;flex-direction:column;gap:5px;flex:1 1 auto}
-  .grp h4{margin:0;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
-    color:#8a9488;font-weight:700}
-  .row{display:flex;gap:5px;flex:1 1 auto}
-  .pathline{height:6px;border-radius:99px;background:#3b3b36;margin:4px 0}
-  .pathlbl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--ink-soft);font-weight:700;margin:0}
+
   .bed{position:relative;flex:1 1 0;min-width:46px;background:var(--card);border:1px solid #c3cdc2;
     border-radius:7px;padding:7px 4px;cursor:pointer;font:inherit;color:inherit;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
@@ -191,13 +195,11 @@
 
   <section id="map">
     <h2>Garden map</h2>
-    <p class="note">Every bed, west to east, keyed by the code painted on it. Tap a bed to open the plant. Gold means it should be in bloom this month. Searching below dims the beds that do not match.</p>
+    <p class="note">The pathway runs the length of the garden, west to east, with the border on one side and the corner bed and woodland garden on the other. Every bed is keyed by the code painted on it — tap one to open the plant. Gold means it should be in bloom this month, and searching below dims the beds that do not match.</p>
 
     <div class="mapwrap">
       <div class="mapinner">
-        <div class="path"><span>Path</span></div>
         <div class="band" id="band"></div>
-        <div class="path"><span>Path</span></div>
         <div class="ends">
           <span class="end">&larr; West &middot; toward the building</span>
           <span class="end">Parking lot &middot; East &rarr;</span>
@@ -471,40 +473,55 @@ const CARE = [
   {when:'Winter',       months:[12,1,2],  job:'Leave it',  note:'The stalks rest standing. They are habitat for many beneficial insects.'}
 ];
 
-/* The 78 beds, read off the three sections of the drawing.
-   Rows run back (nearest the top path) to front. `w` is a bed's share of its
-   row's width, matching the proportions in the drawing; `tree` marks the beds
-   planted around a tree. This is a diagram of the planting, not a survey —
-   the order, the rows and the neighbours are faithful, the shapes are not. */
-const MAP=[
- {id:'west',title:'West end',groups:[
-   {label:'By the building',rows:[[{p:2,w:1}],[{p:3,w:1}],[{p:1,w:1}]]},
-   {label:'Entrance',rows:[
-     [{p:4,w:26},{p:5,w:16},{p:6,w:26},{p:32,w:32}],
-     [{p:3,w:26},{p:27,w:32},{p:33,w:42}],
-     [{p:22,w:26},{p:28,w:32},{p:23,w:42}],
-     [{p:24,w:52},{p:29,w:48}],
-     [{p:26,w:50},{p:25,w:50}]]},
-   {label:'Border',rows:[
-     [{p:7,w:40},{p:36,w:18},{p:32,w:42}],
-     [{p:34,w:26},{p:37,w:16},{p:12,w:16},{p:39,w:22},{p:42,w:20}],
-     [{p:31,w:14},{p:10,w:24},{p:35,w:16},{p:38,w:22},{p:41,w:24}]]}]},
+/* Every bed in the garden, read off page 2 of the source document.
 
- {id:'middle',title:'Middle',groups:[
-   {rows:[
-     [{p:32,w:16},{p:6,w:11},{p:36,w:11},{p:54,w:14},{p:36,w:11},{p:46,w:13},{p:46,w:11},{p:45,w:13}],
-     [{p:39,w:20},{p:42,w:17},{p:43,w:12},{p:42,w:13},{p:45,w:19},{p:6,w:19,tree:true}],
-     [{p:6,w:14},{p:44,w:16},{p:31,w:15},{p:48,w:14},{p:47,w:17},{p:44,w:24}],
-     [{p:41,w:34},{p:40,w:20},{p:43,w:14},{p:49,w:32}]]}]},
+   The pathway runs down the middle. On one side is the long border, with
+   grass beyond it; on the other are the corner bed and the woodland garden,
+   against the park office. Rows run outward from the path, so the first row
+   of each side is the one you stand next to.
 
- {id:'east',title:'East end',groups:[
-   {rows:[
-     [{p:7,w:16},{p:42,w:10},{p:32,w:22},{p:5,w:19},{p:46,w:16},{p:18,w:17}],
-     [{p:48,w:14},{p:12,w:14},{p:48,w:18},{p:50,w:11},{p:47,w:7},{p:6,w:8,tree:true},{p:9,w:11},{p:22,w:17}],
-     [{p:49,w:13},{p:50,w:11},{p:33,w:9},{p:41,w:30},{p:31,w:12},{p:41,w:10},{p:3,w:15}],
-     [{p:47,w:42},{p:51,w:58}]]},
-   {label:'East',rows:[[{p:52,w:1}]],tall:true}]}
+   `w` is a bed's share of its row's width and `span` a group's share of the
+   garden's length, both matching the proportions on the plan. `gap` leaves
+   the path unplanted on that side. This is a diagram of the planting, not a
+   survey: the beds, their order and their neighbours are faithful, the
+   shapes are not. */
+
+/* Across the path, against the park office. Rows run building -> path. */
+const NORTH=[
+ {label:'Corner bed',span:12,rows:[
+   [{p:4,w:60},{p:5,w:40}],
+   [{p:3,w:38},{p:8,w:34},{p:6,w:28}],
+   [{p:9,w:50},{p:7,w:50}]]},
+ {gap:4},
+ {label:'Woodland garden',span:47,rows:[
+   [{p:10,w:22},{fill:28},{p:20,w:26},{fill:24}],
+   [{p:11,w:11},{p:16,w:11},{p:11,w:11},{p:16,w:12},{p:11,w:11},
+    {p:16,w:11},{p:11,w:11},{p:17,w:11},{p:5,w:11}],
+   [{p:15,w:12},{p:9,w:11},{p:12,w:11},{p:18,w:32,tree:true},
+    {p:9,w:11},{p:12,w:11},{p:13,w:12}],
+   [{p:18,w:9},{p:13,w:10},{p:19,w:11},{p:13,w:10},{p:6,w:10},
+    {p:13,w:10},{p:14,w:9},{p:7,w:22,tree:true},{p:14,w:9}]]},
+ {gap:37}
 ];
+
+/* The long border, path -> grass. One continuous run, west to east. */
+const SOUTH=[
+ {label:'By the police office',span:7,rows:[[{p:2,w:1}],[{p:3,w:1}],[{p:1,w:1}]]},
+ {label:'The border',span:87,rows:[
+   [{p:4,w:5},{p:5,w:3},{p:6,w:4},{p:32,w:6},{p:7,w:5},{p:36,w:3},{p:32,w:6},
+    {p:32,w:5},{p:6,w:3},{p:36,w:3},{p:54,w:4},{p:36,w:3},{p:46,w:4},{p:46,w:3},{p:45,w:4},
+    {p:7,w:5},{p:42,w:3},{p:32,w:6},{p:5,w:5},{p:46,w:4},{p:18,w:4}],
+   [{p:3,w:4},{p:27,w:5},{p:33,w:5},{p:34,w:5},{p:37,w:3},{p:12,w:3},{p:39,w:4},{p:42,w:5},
+    {p:39,w:5},{p:42,w:4},{p:43,w:3},{p:42,w:4},{p:45,w:5},{p:6,w:4,tree:true},
+    {p:48,w:4},{p:12,w:4},{p:48,w:5},{p:50,w:3},{p:47,w:2},{p:6,w:2,tree:true},{p:9,w:3},{p:22,w:4}],
+   [{p:22,w:5},{p:28,w:5},{p:23,w:5},{p:31,w:3},{p:10,w:5},{p:35,w:4},{p:38,w:4},{p:41,w:5},
+    {p:6,w:4},{p:44,w:4},{p:31,w:4},{p:48,w:4},{p:47,w:4},{p:44,w:6},
+    {p:49,w:4},{p:50,w:3},{p:33,w:3},{p:41,w:8},{p:31,w:3},{p:41,w:3},{p:3,w:4}],
+   [{p:24,w:14},{p:29,w:12},{p:41,w:20},{p:40,w:12},{p:43,w:8},{p:49,w:16},{p:47,w:8},{p:51,w:10}],
+   [{p:26,w:50},{p:25,w:50}]]},
+ {label:'East',span:6,rows:[[{p:52,w:1}]],tall:true}
+];
+
 
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -528,6 +545,7 @@ $('#mail').href='mailto:victor.azzaretto@parks.ny.gov?subject='+
 
 /* the bed diagram */
 function bedHTML(c){
+  if(c.fill) return `<div class="fill" style="flex-grow:${c.fill}"></div>`;
   const pl=PLANTS.find(x=>x.n===c.p); if(!pl) return '';
   const shot=pl.photo?`;--shot:url(thumbs/${pl.n}.jpg)`:'';
   return `<button class="bed${pl.months.includes(MON)?' bloom':''}" data-n="${c.p}"
@@ -536,15 +554,19 @@ function bedHTML(c){
     <span class="num">${c.p}</span><span class="code">${
       code(pl).split(' ').map(w=>`<b>${esc(w)}</b>`).join('')}</span></button>`;
 }
-$('#band').innerHTML=MAP.map(s=>`
-  <div class="sect">
-    <h3>${esc(s.title)}</h3>
-    <div class="groups">${s.groups.map(g=>`
-      <div class="grp"${g.tall?' style="flex:0 0 84px"':''}>
-        ${g.label?`<h4>${esc(g.label)}</h4>`:'<h4>&nbsp;</h4>'}
-        ${g.rows.map(r=>`<div class="row">${r.map(bedHTML).join('')}</div>`).join('')}
-      </div>`).join('')}</div>
-  </div>`).join('');
+function groupHTML(g){
+  if(g.gap) return `<div class="grp gap" style="flex-grow:${g.gap}"></div>`;
+  return `<div class="grp${g.tall?' tall':''}" style="flex-grow:${g.span}">
+    <h4>${g.label?esc(g.label):'&nbsp;'}</h4>
+    ${g.rows.map(r=>`<div class="row">${r.map(bedHTML).join('')}</div>`).join('')}
+  </div>`;
+}
+$('#band').innerHTML=
+  `<div class="edge">Park office</div>
+   <div class="side north">${NORTH.map(groupHTML).join('')}</div>
+   <div class="path"><span>The pathway</span></div>
+   <div class="side south">${SOUTH.map(groupHTML).join('')}</div>
+   <div class="edge">Grass</div>`;
 $$('.bed').forEach(b=>b.addEventListener('click',()=>openPlant(+b.dataset.n)));
 
 /* Most people meet the garden at the east end, coming in from the parking
