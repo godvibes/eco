@@ -58,7 +58,22 @@
 
   /* the bed diagram */
   .mapwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
-  .band{min-width:1240px;display:flex;gap:14px;align-items:stretch}
+  /* max-content so the paths and end labels stretch the full length of the
+     beds, not just to the minimum width */
+  .mapinner{min-width:1240px;width:max-content}
+  /* the two paths the border runs between. They scroll with the map, so they
+     stay the full length of the garden and stay aligned with the beds. */
+  .path{height:19px;border-radius:4px;background:#77776d;position:relative;
+    display:flex;align-items:center;margin:7px 0}
+  .path::before{content:"";position:absolute;left:10px;right:10px;top:50%;
+    border-top:2px dashed rgba(255,255,255,.5)}
+  .path span{position:sticky;left:6px;background:#77776d;color:#fff;font-weight:700;
+    font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:1px 7px;
+    border-radius:3px;z-index:1}
+  .ends{display:flex;justify-content:space-between;gap:12px;margin-top:6px;
+    font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700}
+  .band{display:flex;gap:14px;align-items:stretch}
   .sect{display:flex;flex-direction:column;gap:5px}
   .sect+.sect{border-left:1px dashed var(--line);padding-left:14px}
   .sect h3{margin:0 0 2px;font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;
@@ -178,11 +193,17 @@
     <h2>Garden map</h2>
     <p class="note">Every bed, west to east, keyed by the code painted on it. Tap a bed to open the plant. Gold means it should be in bloom this month. Searching below dims the beds that do not match.</p>
 
-    <p class="pathlbl">Path</p>
-    <div class="pathline"></div>
-    <div class="mapwrap"><div class="band" id="band"></div></div>
-    <div class="pathline"></div>
-    <p class="pathlbl">Path</p>
+    <div class="mapwrap">
+      <div class="mapinner">
+        <div class="path"><span>Path</span></div>
+        <div class="band" id="band"></div>
+        <div class="path"><span>Path</span></div>
+        <div class="ends">
+          <span class="end">&larr; West &middot; toward the building</span>
+          <span class="end">Parking lot &middot; East &rarr;</span>
+        </div>
+      </div>
+    </div>
 
     <div class="legend">
       <span><i></i>in bloom now</span>
@@ -527,8 +548,23 @@ $('#band').innerHTML=MAP.map(s=>`
 $$('.bed').forEach(b=>b.addEventListener('click',()=>openPlant(+b.dataset.n)));
 
 /* Most people meet the garden at the east end, coming in from the parking
-   lot, so open the map there rather than at the far west. */
-requestAnimationFrame(()=>{const w=$('.mapwrap'); if(w) w.scrollLeft=w.scrollWidth});
+   lot, so open the map there rather than at the far west. Run it again once
+   the bed photos have loaded — until they do the map is not its full width —
+   but never yank the map out from under someone already scrolling it. */
+(function(){
+  const w=$('.mapwrap'); if(!w) return;
+  let put=null, until=0;
+  const toEast=()=>{
+    if(performance.now()>until) return;              /* settling window is over */
+    if(put!==null && w.scrollLeft>4 && Math.abs(w.scrollLeft-put)>4) return; /* they moved it */
+    w.scrollLeft=w.scrollWidth;
+    put=w.scrollLeft;
+  };
+  const settle=ms=>{until=performance.now()+ms;
+    requestAnimationFrame(toEast); [80,250,600].forEach(t=>setTimeout(toEast,t));};
+  settle(900);
+  addEventListener('load',()=>settle(900));
+})();
 
 /* the original drawing, kept below */
 $('#strips').innerHTML=[1,2,3].map(m=>`
