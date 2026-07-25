@@ -24,8 +24,15 @@
   header{background:var(--green);color:#fff;padding:34px 0 30px}
   header .park{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
     color:#8fc0a2;font-weight:700;margin:0 0 10px}
-  header h1{margin:0 0 10px;font-size:1.9rem;line-height:1.1;letter-spacing:-.02em}
-  header p{margin:0;color:#bcd6c6;font-size:.98rem}
+  header h1{margin:0;font-size:1.9rem;line-height:1.1;letter-spacing:-.02em}
+
+  .hero{aspect-ratio:4/5;max-height:70vh;background:var(--green-pale)}
+  /* favour the upper third — that is where the butterfly and the tree are */
+  .hero img{width:100%;height:100%;object-fit:cover;object-position:center 28%;display:block}
+  @media(min-width:620px){.hero{aspect-ratio:16/9}}
+
+  .intro p{margin:0 0 14px;max-width:64ch}
+  .intro p:last-child{margin-bottom:0}
 
   /* care — four seasons, one job each */
   .seasons{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
@@ -146,15 +153,25 @@
   <div class="wrap">
     <p class="park">Belmont Lake State Park</p>
     <h1>Pollinator Pathway</h1>
-    <p>54 native species, planted fall 2024.</p>
   </div>
 </header>
 
+<div class="hero"><img src="hero.jpg" alt="Purple coneflowers in bloom along the Pollinator Pathway"></div>
+
 <main class="wrap">
 
-  <section id="care" style="border-top:0">
-    <h2>Maintenance</h2>
-    <div class="seasons" id="seasons"></div>
+  <section class="intro" style="border-top:0">
+    <p>This garden was established in fall of 2024 to showcase the beauty of plants that are native to the Northeastern US. The native plants you see here are adapted to the local soil, require little maintenance, no fertilizer and seldom need watering.</p>
+    <p>In addition, they provide invaluable ecosystem services, such as food and habitat for wildlife as well as the preservation of our natural resources like clean air and water. Using a large assortment of plant species in the garden increases both biodiversity and seasonal interest.</p>
+    <p>54 species were included to promote environmentally healthy landscaping practices and to inspire park visitors to add ecologically beneficial plants into their home landscapes. This garden was designed and installed by the Bethpage State Park Horticulture Program.</p>
+  </section>
+
+  <section id="contact">
+    <div class="cta">
+      <h2>Tell us what you see</h2>
+      <p>Photos, suggestions and feedback are all welcome — they help us keep making this the best garden it can be.</p>
+      <a class="btn" id="mail" href="#">Contact us</a>
+    </div>
   </section>
 
   <section id="map">
@@ -186,12 +203,9 @@
     <div class="idx" id="idx"></div>
   </section>
 
-  <section id="contact">
-    <div class="cta">
-      <h2>Tell us what you see</h2>
-      <p>Photos, suggestions and feedback are all welcome — they help us keep making this the best garden it can be.</p>
-      <a class="btn" id="mail" href="#">Contact us</a>
-    </div>
+  <section id="care">
+    <h2>Maintenance</h2>
+    <div class="seasons" id="seasons"></div>
   </section>
 
 </main>
