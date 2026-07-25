@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pollinator Pathway — Belmont Lake State Park</title>
+<meta name="description" content="The 54 native species planted along the Pollinator Pathway at Belmont Lake State Park.">
+<style>
+  :root{
+    --green:#1d3b2a; --green-mid:#2f5d42; --green-pale:#e4f0e8;
+    --gold:#b3801f;
+    --ink:#1a1f19; --ink-soft:#54604f; --line:#d7ded6;
+    --bg:#fcfbf7; --card:#fff; --r:12px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  .wrap{max-width:800px;margin:0 auto;padding:0 18px}
+  a{color:var(--green-mid)}
+  h2{font-size:1.25rem;margin:0 0 14px;letter-spacing:-.01em}
+  section{padding:34px 0;border-top:1px solid var(--line)}
+
+  header{background:var(--green);color:#fff;padding:34px 0 30px}
+  header .park{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:#8fc0a2;font-weight:700;margin:0 0 10px}
+  header h1{margin:0 0 10px;font-size:1.9rem;line-height:1.1;letter-spacing:-.02em}
+  header p{margin:0;color:#bcd6c6;font-size:.98rem}
+
+  /* care — four seasons, one job each */
+  .seasons{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .s{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .s.now{border-color:var(--gold);background:#fdf8ee}
+  .s .when{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;margin:0 0 6px}
+  .s.now .when{color:var(--gold)}
+  .s .job{margin:0;font-size:1.28rem;font-weight:700;letter-spacing:-.01em}
+  .s .note{margin:6px 0 0;font-size:.9rem;color:var(--ink-soft)}
+
+  /* map */
+  .strip{margin-bottom:14px}
+  .strip h3{margin:0 0 6px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--card);
+    border:1px solid var(--line);border-radius:var(--r)}
+  .scroll img{display:block;width:100%;min-width:820px;height:auto}
+  .ph{height:160px;display:flex;align-items:center;justify-content:center;
+    color:var(--ink-soft);font-size:.88rem;text-align:center;padding:20px;
+    background:repeating-linear-gradient(45deg,#f2f5f1 0 12px,#eaf0e9 12px 24px)}
+  .note{font-size:.9rem;color:var(--ink-soft);margin:0 0 16px;max-width:60ch}
+
+  /* list */
+  .search{width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:10px;
+    background:var(--card);font:inherit;margin-bottom:12px}
+  .idx{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px}
+  .idx button{background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:11px 13px;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:baseline;font:inherit}
+  .idx button:hover,.idx button:focus-visible{border-color:var(--green-mid)}
+  .idx .n{font-size:.74rem;font-weight:700;color:#fff;background:var(--green);
+    border-radius:5px;padding:2px 7px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+  .idx .nm{font-size:.94rem;line-height:1.25}
+  .idx .nm em{display:block;color:var(--ink-soft);font-size:.8rem}
+
+  /* plant view */
+  #view{position:fixed;inset:0;background:var(--bg);z-index:80;overflow-y:auto;display:none}
+  #view.open{display:block}
+  .bar{position:sticky;top:0;background:rgba(252,251,247,.96);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:11px 18px;z-index:2}
+  .bar button{background:none;border:0;color:var(--green-mid);font:inherit;font-weight:600;
+    cursor:pointer;padding:6px 2px}
+  .pv{max-width:620px;margin:0 auto;padding:0 18px 60px}
+  .pv img,.pv .photoph{width:100%;aspect-ratio:3/2;border-radius:var(--r);display:block;margin:18px 0 0}
+  .pv img{object-fit:cover;background:var(--green-pale)}
+  .pv .photoph{background:var(--green-pale);display:flex;align-items:center;justify-content:center;
+    color:var(--green-mid);font-size:.86rem}
+  .pv h2{margin:18px 0 0;font-size:1.5rem;line-height:1.15}
+  .pv .sci{color:var(--ink-soft);margin:3px 0 18px;font-size:.98rem}
+  .pv .sci i{font-style:italic}
+  .facts{margin:0 0 18px}
+  .fact{display:flex;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:.94rem}
+  .fact .k{flex:0 0 92px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;padding-top:2px}
+  .funfact{background:var(--green-pale);border-radius:10px;padding:13px 15px;font-size:.93rem;margin:18px 0 0}
+  .credit{border-top:1px solid var(--line);margin-top:24px;padding-top:14px;
+    font-size:.82rem;color:var(--ink-soft)}
+
+  footer{border-top:1px solid var(--line);padding:28px 0 50px;color:var(--ink-soft);font-size:.85rem}
+  footer p{margin:0 0 9px;max-width:66ch}
+  footer b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="park">Belmont Lake State Park</p>
+    <h1>Pollinator Pathway</h1>
+    <p>54 native species, planted fall 2024.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="care" style="border-top:0">
+    <h2>Maintenance</h2>
+    <div class="seasons" id="seasons"></div>
+  </section>
+
+  <section id="map">
+    <h2>Garden map</h2>
+    <p class="note">West to east along the path. Scroll each strip sideways. Beds are labelled with the plant's number and the first letters of its scientific name — search that number or those letters below.</p>
+    <div id="strips"></div>
+  </section>
+
+  <section id="plants">
+    <h2>The 54 species</h2>
+    <input class="search" id="search" type="search" placeholder="Search a name, a number, or a map label" autocomplete="off">
+    <div class="idx" id="idx"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>Garden plan, propagation, growing and installation:</b> Victor Azzaretto, Alexa Hoffman and Esther Sherry, Bethpage State Park Horticulture Program.</p>
+    <p><b>Plant guide text and photography:</b> Yael Weiss, Bethpage State Park Ecologist. Photographs marked as such are from wildflower.org. <b>Map illustration:</b> Esther Sherry.</p>
+    <p>Reference sources for the species descriptions were not recorded in the original document and are being reconstructed.</p>
+  </div>
+</footer>
+
+<div id="view">
+  <div class="bar"><button id="back">&larr; Back</button></div>
+  <div class="pv" id="pv"></div>
+</div>
+
+<script>
+const PLANTS = [
+{n:1,common:"Clustered Mountain Mint",sci:"Pycnanthemum muticum",blooms:"Late Summer (July – August)",months:[7,8],host:"Moths and Bees",tags:["moths","bees"],credit:"Yael Weiss",photo:"1.jpg",
+ desc:"Clustered Mountainmint has whitish flowers that are densely packed into clusters. Bracts (also known as modified leaves) have a frosty appearance and are aromatically minty. Leaves are oval shaped. Stems are square. This plant grows best when in full sun.",
+ fact:"University of Pennsylvania conducted pollinator surveys and found that this perennial was the top host plant for encouraging pollinator visits and biodiversity."},
+
+{n:2,common:"Yarrow",sci:"Achillea millefolium",blooms:"Late Summer (July – August)",months:[7,8],host:"Moths",tags:["moths"],credit:"Yael Weiss",photo:"2.jpg",
+ desc:"Yarrow is a plant with white clustered flowers found in a dome-shaped arrangement. This plant grows several tall stems with fern-like leaves. Leaves are longer at the base. The plant itself can grow to be about 3 feet high and does well in disturbed areas. Flowers have a strong sweet odor.",
+ fact:"European Starlings will use this flower to line the inside of their nests."},
+
+{n:3,common:"Swamp Rose Mallow",sci:"Hibiscus moscheutos",blooms:"Late Summer (July – August)",months:[7,8],host:"Bees and Swallowtail Butterflies",tags:["bees","butterflies"],credit:"Yael Weiss",photo:"3.jpg",
+ desc:"Swamp Rose Mallow has large 5 petaled flowers. The color of these flowers can vary between whitish to pink. Leaves are alternate, toothed and heart-shaped. Foliage is velvety in texture (as well as the seed pod). A single plant can provide multiple stems. For best growth, wet soil and part shade are the preferred conditions for this plant.",
+ fact:"This plant has many cultivars that come in different colors such as hot pink and bright red."},
+
+{n:4,common:"Shrubby St. John’s Wort",sci:"Hypericum prolificum",blooms:"Summer (June – July)",months:[6,7],host:"Butterflies and Moths",tags:["butterflies","moths","shrub"],form:"Shrub",credit:"wildflower.org",photo:"4.jpg",
+ desc:"Shrubby St. John’s Wort is a shrub with yellow blooming flowers. Flowers usually grow singularly and have 5 petals which are typically out of view because of the high number of stamens. Stamens are bushy and yellow. Leaves are oval and dark green. This plant grows densely and compact if conditions are right. Three chambered capsules hold the brown seeds which pop open in autumn.",
+ fact:"This plant was thought to ward off evil spirits, if burned, especially on St. John’s Day (hence the name)."},
+
+{n:5,common:"Spiderwort",sci:"Tradescantia bracteata",blooms:"Spring (May – June)",months:[5,6],host:"Bumble Bees",tags:["bees"],credit:"Yael Weiss",photo:"5.jpg",
+ desc:"Spiderwort is a plant with dainty, purple flowers. Each flower has 3 petals. At the center are six hairy stamens that are yellow in color. These flowers sit atop narrow, green leaves. Flowers will open up in the early morning but then close during the afternoon. This plant will go dormant in the extreme heat of the summer.",
+ fact:"Each flower on this plant only blooms for one day! However, it might be hard to notice as each plant has an abundance of flowers."},
+
+{n:6,common:"Philadelphia Fleabane",sci:"Erigeron philadelphicus",blooms:"Summer (June – August)",months:[6,7,8],host:"Flower Moths (including the larval host for the Obscure Schinia Moth)",tags:["moths"],credit:"wildflower.org",photo:"6.jpg",
+ desc:"Philadelphia Fleabane is comprised of tiny flowerheads on multi-branched stems. Flowers are daisy-like with white thin florets (sometimes as many as 100). The center is a vibrant yellow. Flowerheads that are open will also close at night. Stems of this plant are hairy. The leaves that are closer to the base are noticeably heart-shaped.",
+ fact:"It was believed that this plant had an odor that repelled fleas."},
+
+{n:7,common:"Big Leaf Aster",sci:"Eurybia macrophyllus",blooms:"Fall (September – October)",months:[9,10],host:"Pearl Crescent Butterflies",tags:["butterflies"],credit:"Yael Weiss",photo:"7.jpg",
+ desc:"Big Leaf Aster is a perennial with white flowers and yellow centers. Flowers are atop stems that could reach about two feet. Sometimes there are up to 20 rays on each floret. Leaves are noticeably heart-shaped and provide good ground cover (rhizomes help it spread). The foliage of this plant has serrated edges. Stems are typically purplish in color.",
+ fact:"In this region, this flower is the earliest of all the Asters to bloom."},
+
+{n:8,common:"Zig Zag Goldenrod",sci:"Solidago flexicaulus",blooms:"Fall (September – November)",months:[9,10,11],host:"Sweat Bees and Hairstreak Butterflies",tags:["bees","butterflies"],credit:"wildflower.org",photo:"8.jpg",
+ desc:"Zig Zag Goldenrod is a perennial that grows upright. It has spikey clusters of flowers with up to 5 petals. These bloom yellow. Foliage is noticeably toothed, helping identify it from other goldenrods. Leaves are broader at the base and smaller towards the top. The stems seem angled, and zig zag between the nodes of the leaves (hence the name).",
+ fact:"This plant was originally used to treat nosebleeds and headaches."},
+
+{n:9,common:"Golden Alexanders",sci:"Zizia aurea",blooms:"Mid Spring / Early Summer (May – June)",months:[5,6],host:"Black Swallowtail Butterflies",tags:["butterflies"],credit:"Yael Weiss",photo:"9.jpg",
+ desc:"Golden Alexanders have flat-topped clusters of yellow flowers. Leaves have serrated edges and stay green all summer long. The shape of the flower provides a perfect landing-pad for larger butterflies (including swallowtails). Black Swallowtails lay their eggs on this plant. It also provides forage for their larvae. Seeds mature in the fall and provide forage for songbirds as well.",
+ fact:"Golden Alexanders are in the parsley family."},
+
+{n:10,common:"Swamp Sunflower",sci:"Helianthus angustifolius",blooms:"Fall (September – October)",months:[9,10],host:"Miner Bees and Painted Lady Butterflies",tags:["bees","butterflies"],credit:"wildflower.org",photo:"10.jpg",
+ desc:"Swamp Sunflower is a perennial with bright yellow blooms. Flowers are symmetrical with up to 20 rays. These surround smaller disc florets that make a purplish-brown center. This sunflower is smaller than others in the same family. Leaves are very narrow in shape, dark green in color and also shiny. Stems can be purplish-red. This plant can grow to be 8 feet.",
+ fact:"These flowers attract caterpillars which then attract native birds. Visitors include Baltimore Orioles, Cedar Waxwings, and Northern Cardinals."},
+
+{n:11,common:"Christmas Fern",sci:"Polystichum acrostichoides",blooms:"",months:[],host:"Moths",tags:["moths"],form:"Fern — no flowers",credit:"Yael Weiss",photo:"11.jpg",
+ desc:"Christmas Ferns do not have flowers. Foliage is referred to as “fronds” which grow in clusters. It is glossy green and remains that way till the end of the year (however, when fronds first unfurl in spring, they can be silvery in color). Christmas Ferns are different from other ferns because they grow less like a carpet and more so in clumps.",
+ fact:"Not too many animals can use this plant for food, although it is a valuable nesting material for the Ovenbird."},
+
+{n:12,common:"Columbine",sci:"Aquilegia canadensis",blooms:"Early Summer (June)",months:[6],host:"Hummingbirds",tags:["hummingbirds"],credit:"Yael Weiss",photo:"12.jpg",
+ desc:"Red Columbine is a shade-tolerant, woodland plant in the buttercup family. This perennial is showy; flowers have 5 yellow petals (with long yellow stamens) and are also surrounded by 5 red sepals. The flower appears droopy given the flexibility of the small stalk (pedicel). A. canadensis is an important early source of nectar for hummingbirds and bees after they emerge from overwintering.",
+ fact:"The red sepals resemble an eagle’s talon. This explains its scientific name (“Aquila” means eagle in Latin)."},
+
+{n:13,common:"Sweetfern",sci:"Comptonia peregrina",blooms:"",months:[],host:"Caterpillars",tags:["butterflies","moths","shrub"],form:"Shrub",credit:"Yael Weiss",photo:"13.jpg",
+ desc:"Sweetfern is a shrub in the Laurel family and not a fern (despite it looking like one). Leaves are long, olive green, shiny and notched. Foliage has a noticeably sweet fragrance. Yellowish flowers grow on branches, once it blooms. This shrub can spread easily and form colonies. It can also fix its own nitrogen. Sweetfern does well in areas that are disturbed or have poor soil.",
+ fact:"When used to create tea, this plant supposedly can be used to treat poison ivy."},
+
+{n:14,common:"Canada Anemone",sci:"Anemone canadensis",blooms:"Spring (May – June)",months:[5,6],host:"Moths and Wasps",tags:["moths"],credit:"wildflower.org",photo:"14.jpg",
+ desc:"Canada Anemone is a plant with white flowers and yellow stamens. Flowers bloom to be over an inch wide and grow on upright stalks above leaves. Foliage is a deep green color, basal and also toothed. This plant is fast-growing and aggressive given damp and full sun conditions. The leaves of this plant are similar in appearance to Wild Geranium.",
+ fact:"This plant is a natural pest control; the wasps it attracts will feed on unwanted insects in the garden."},
+
+{n:15,common:"Blue Stem Goldenrod",sci:"Solidago caesia",blooms:"Fall (September – October)",months:[9,10],host:"Moths and Bees",tags:["moths","bees"],credit:"Yael Weiss",photo:"15.jpg",
+ desc:"Blue Stem Goldenrod is a perennial with yellow blooms arranged in clusters. The arrangement of these flowers is vertical. Stems are green at first and then become blueish as the plant matures (distinguishing it from the similar Sweet Goldenrod). The growth is not as aggressively widespread as some other Goldenrods.",
+ fact:"This plant is mistaken as the cause of hay fever. However, its pollen is too big to reach your sinuses. Ragweed blooms at the same time and is the real culprit."},
+
+{n:16,common:"Goat’s Beard",sci:"Aruncus dioicus",blooms:"Spring (May – June)",months:[5,6],host:"Butterflies",tags:["butterflies"],credit:"wildflower.org",photo:"16.jpg",
+ desc:"Goat’s Beard is a showy plant with feathery blooms. Flowers are cream colored and grow in clusters above tall stems that can reach 6 feet. Flowers have a peak bloom of about 10 days and then become a tan color. The leaves of Goat’s Beard are dark green, toothed, and appear larger at the base than leaves closer to the top.",
+ fact:"This plant is dioecious. This means that the plant either has all male flowers or all female flowers. Goat’s Beard with male flowers have showier blooms."},
+
+{n:17,common:"Jumpseed",sci:"Persicaria virginica",blooms:"Late Summer / Early Fall (July – October)",months:[7,8,9,10],host:"Leafcutter Bees",tags:["bees"],credit:"wildflower.org",photo:"17.jpg",
+ desc:"Jumpseed has white flowers that are arranged on upright, long stems. Flowers are teardrop shaped and have 4 petals. This plant has wide green leaves that are oval shaped and pointed. Leaves are also hairy. V-shaped splotches of brown color may be seen on newer leaves in the spring months. Seeds can be found on the tip of the fruit and will jump when touched (hence the name).",
+ fact:"This plant is unique for being shade-tolerant. Plants in the Persicaria genus typically do best in full sun."},
+
+{n:18,common:"White Wood Aster",sci:"Eurybia divaricata",blooms:"Fall (September – October)",months:[9,10],host:"Pearl Crescent Butterfly (larvae)",tags:["butterflies"],credit:"wildflower.org",photo:"18.jpg",
+ desc:"White Wood Aster is a perennial that blooms in abundant clusters. Flowers are small and white with 5 to 10 skinny petals (no bigger than an inch). The arrangement of these blooms is flat-topped. Leaves are green, heart-shaped, rough feeling, and hairy underneath. Foliage has a tendency to wither after some time. Stems have a zig-zag nature to them, which is used to help identify it.",
+ fact:"The center of this flower will start off yellow but turn red, upon being visited by pollinators."},
+
+{n:19,common:"Bleeding Heart",sci:"Dicentra eximia",blooms:"Late Spring / Early Summer (April – June)",months:[4,5,6],host:"Hummingbirds",tags:["hummingbirds"],credit:"wildflower.org",photo:"19.jpg",
+ desc:"Bleeding Heart is a droopy pink flowering perennial. The four petals of this flower create a shape that looks like a heart. These flowers bloom in clusters along a stem and will last through the summer (if conditions are right). Leaves are fern-like and grow in a bushy mound. Seeds can be found in pods that are pointy in appearance.",
+ fact:"Bleeding Heart and ants have a symbiotic relationship. Ants favor the elaiosome covering the seeds, so collecting seeds before the ants take them may be tricky!"},
+
+{n:20,common:"Woodland Sunflower",sci:"Helianthus divaricatus",blooms:"Late Summer (July – August)",months:[7,8],host:"Moths",tags:["moths"],credit:"wildflower.org",photo:"20.jpg",
+ desc:"Woodland Sunflower is a plant that produces large yellow flowers with a darker center. This center is made up of smaller flowers called florets. Stems are tall and can reach up to 7 feet. This provides dense ground cover for wildlife. Stems will also branch where flowerheads occur. Leaves are smooth on top, have a hairy underside, and appear opposite on the stem.",
+ fact:"Mourning doves, sparrows, other small birds and even mammals will eat the seeds inside this flower."},
+
+{n:21,common:"Obedient Plant",sci:"Phystostegia virginiana",blooms:"Late Summer (July – August)",months:[7,8],host:"Hummingbirds",tags:["hummingbirds"],credit:"Yael Weiss",photo:"21.jpg",
+ desc:"Obedient Plant is showy and grows pinkish-purple flowers atop spikes. The shape of the flower is tubular and dark purple spots are noticeable on the inside. Flowers will bloom from the bottom up. Foliage is sharp. Stems are square-shaped. This plant does best in wetter soils and because of rhizomes, can form colonies. It is also in the mint family.",
+ fact:"The plant is named “obedient” because flowers can be moved around and will continue to stay that way."},
+
+{n:22,common:"Foxglove Beardtongue",sci:"Penstemon digitalis",blooms:"Late Spring / Early Summer (May – June)",months:[5,6],host:"Bumble Bees and Hummingbirds",tags:["bees","hummingbirds"],credit:"Yael Weiss",photo:"22.jpg",
+ desc:"Foxglove Beardtongue has clumps of showy, white flowers. The small, tubular flower shape does not affect long-tongued bees who can still access the nectar. Flowers have a long bloom time (about a month). Leaves are dark green, have a shiny surface and are pointed. For stems to stay upright, this plant needs to be planted in full sun.",
+ fact:"The stamen inside the flower has tufts of hair, which explains the “beardtongue” part of the name."},
+
+{n:23,common:"Butterfly Milkweed",sci:"Asclepias tuberosa",blooms:"Summer (June – July)",months:[6,7],host:"Monarch Butterfly (larvae) — critical",tags:["monarch","butterflies"],credit:"Yael Weiss",photo:"23.jpg",
+ desc:"Butterfly Milkweed is critical to the lifecycle of Monarch Butterflies. Blooming in bright orange clusters, this plant prefers full sun, with sandier and drier soils. Typically, it does not grow higher than 3 feet. Leaves are skinny, alternating and smooth. Stems are hairy and do not produce the opaque milky sap characteristic of Common Milkweed. It is still favorable forage for Monarch caterpillars, that chew off most of the foliage by midsummer.",
+ fact:"While easily grown from seed, Butterfly Milkweed will take about 3 years to bloom and fully establish."},
+
+{n:24,common:"Purple Coneflower",sci:"Echinacea purpurea",blooms:"Summer (June – July)",months:[6,7],host:"Hummingbirds",tags:["hummingbirds"],credit:"Yael Weiss",photo:"24.jpg",
+ desc:"Purple Coneflowers bloom bright purplish-pink flowers, with hairy stems and spikey brown centers. The latter is the seed-head, which is cone-shaped in appearance. These flowers are showy, last throughout summer and are noticeably aggressive in the garden setting. Stems will grow clumped together. Seeds mature by autumn and also attract birds such as the American Goldfinch. In the winter months, these flowers can still be seen on their long stems.",
+ fact:"This flower is odorless until flower petals point downwards. Only then are these Coneflowers sweet in smell."},
+
+{n:25,common:"Giant Coneflower",sci:"Rudbeckia maxima",blooms:"Summer (June – July)",months:[6,7],host:"American Lady Butterflies",tags:["butterflies"],credit:"Yael Weiss",photo:"25.jpg",
+ desc:"Giant Coneflower is a perennial that grows to be as tall as 7 feet. Atop these stalks is a drooping yellow flower with a tall brown center. Called a cone, this center can be up to 6 inches and holds the seeds. Once seeds mature, it can attract Goldfinches. Leaves are waxy and blueish-silver.",
+ fact:"Sometimes this plant is also called “Cabbage Leaf” Coneflower because of the foliage sharing a striking resemblance to cabbage."},
+
+{n:26,common:"Little Bluestem",sci:"Schizachyrium scoparium",blooms:"Late Summer to Fall (August – October)",months:[8,9,10],host:"Skipper Butterflies (larvae)",tags:["butterflies","shrub"],form:"Ornamental grass",credit:"Yael Weiss",photo:"26.jpg",
+ desc:"Little Bluestem is an ornamental grass. This plant grows in dense clusters and has narrow blades that appear blueish-green in spring and summer. In autumn, it turns a reddish gold color. This grass will also survive through winter. Seeds are white and fuzzy and encourage birds to feed.",
+ fact:"The deep roots of this grass make it a suitable plant for controlling erosion and stabilizing roadside environments."},
+
+{n:27,common:"Dense Blazing Star",sci:"Liatris spicata",blooms:"Late Summer (July – August)",months:[7,8],host:"Hummingbirds, Monarch and Swallowtail Butterflies",tags:["hummingbirds","monarch","butterflies"],credit:"Yael Weiss",photo:"27.jpg",
+ desc:"Dense Blazing Star is a vertical growing plant with tufts of fluffy purple flowerheads. Flowerheads are feathery. This plant can grow to be about 6 feet in length. Green, slender, and grass-like leaves grow opposite along the stem (which decrease in size going up the plant). This Blazing Star prefers full sun exposure and wet soils.",
+ fact:"Flowers will bloom from the top down, which is uncommon."},
+
+{n:28,common:"Meadow Blazing Star",sci:"Liatris ligulistylis",blooms:"Late Summer (July – August)",months:[7,8],host:"Monarch Butterflies",tags:["monarch","butterflies"],credit:"Yael Weiss",photo:"28.jpg",
+ desc:"Meadow Blazing Star differs from Rough Blazing Star with regards to stems being longer and flowers less densely packed. There is more branching with this variety of Blazing Star. Bloom color is a bright purple or magenta. Flowers are also more likely to bloom at once rather than gradually. This plant is a Monarch magnet, where dozens can be seen on the flowers at one time.",
+ fact:"Blooms are showy and can last up to six weeks!"},
+
+{n:29,common:"Rattlesnake Master",sci:"Eryngium yuccifolium",blooms:"Summer (June – July)",months:[6,7],host:"Moths and Black Swallowtail Butterflies",tags:["moths","butterflies"],credit:"Yael Weiss",photo:"29.jpg",
+ desc:"Rattlesnake Master is known for its spikey flowers. At peak bloom, flowers are white. At the end of the season, it turns brown when seeds mature. Flower heads appear to be similar to thistle but are not in that family. Instead, it is a part of the carrot family. This is why it is attractive to Black Swallowtail butterflies. E. yuccifolium has many slender stems with a large root that allows water storage.",
+ fact:"This plant’s name is derived from those who believed the root was an antidote to rattlesnake bites."},
+
+{n:30,common:"Royal Catchfly",sci:"Silene regia",blooms:"Summer (June – July)",months:[6,7],host:"Ruby-throated Hummingbird and Black Swallowtail Butterflies",tags:["hummingbirds","butterflies"],credit:"Yael Weiss",photo:"30.jpg",
+ desc:"Royal Catchfly has tubular flowers, vibrant red in color. Each flower has 5 petals that are toothed at the end. Flowers are arranged in small clusters atop stems. Leaves are opposite along a stem. Both the leaves and stems of this plant have hairs and can sometimes be purplish in color.",
+ fact:"Flowers of this plant are sticky and will catch smaller insects (hence the name). However, it is not carnivorous. Enzymes will break down the insects to prevent rot."},
+
+{n:31,common:"Sweet Goldenrod",sci:"Solidago odora",blooms:"Late Summer (July – September)",months:[7,8,9],host:"Moths and Butterflies",tags:["moths","butterflies"],credit:"Yael Weiss",photo:"31.jpg",
+ desc:"Sweet Goldenrod blooms yellow flowers in rows on arching stems. Clumps of flowers appear slender. Foliage is dark green and glossy. Leaves are aromatically sweet (as the name suggests). This combined with very narrow leaves helps the plant stand out amongst other goldenrod varieties. Stems can sometimes be reddish if not green in color.",
+ fact:"This flower became an ingredient for tea in the Americas (post-Boston Tea Party era)."},
+
+{n:32,common:"Carolina Geranium",sci:"Geranium carolinianum",blooms:"Summer (June – August)",months:[6,7,8],host:"Bees and Flower Flies",tags:["bees"],credit:"wildflower.org",photo:"32.jpg",
+ desc:"Carolina Geranium blooms in pale pink (although it sometimes appears white). Flowers are delicate and have 5 petals that are slightly notched at the top. Inside the flower, darker lines can be seen. Leaves are palmated, meaning they take on the shape of a hand (and have 5 parts). Stems can be green with a slight reddish tinge. Seeds are found in an elongated capsule atop the plant that pops open upon maturity.",
+ fact:"Mourning Doves will eat the seeds of this plant."},
+
+{n:33,common:"Showy Swamp Milkweed",sci:"Asclepias incarnata v. pulchra",blooms:"Summer (June – July)",months:[6,7],host:"Monarch Butterfly (larvae) — critical",tags:["monarch","butterflies"],credit:"wildflower.org",photo:"33.jpg",
+ desc:"Showy Swamp Milkweed is similar to Swamp Milkweed. Both grow to be the same height (up to 4 feet), have pink blooming flowers, and the same fragrance. However, Showy Milkweed is slightly different in appearance and touch; it has fuzzier foliage and is stockier as a plant overall. In autumn, leaves turn yellow and pods will open to release seeds attached to fluff (for wind dispersal).",
+ fact:"This variety prefers wetter soils and can be found growing naturally in bogs or used in rain gardens."},
+
+{n:34,common:"Giant Purple Hyssop",sci:"Agastache scrophulariifolia",blooms:"Late Summer (July – August)",months:[7,8],host:"Bees and Hummingbirds",tags:["bees","hummingbirds"],credit:"Yael Weiss",photo:"34.jpg",
+ desc:"Giant Purple Hyssop is a vertical plant of tiny purple flowers blooming along tall stalks. Flowers have a spikey appearance and will open and close throughout the bloom period. This hyssop is hardy; stems are sturdy and blooms last many weeks throughout the summer. Leaves grow in pairs (opposite each other) and have jagged edges. Tiny white hairs cover the stems. Birds will feed on its seeds in autumn.",
+ fact:"The leaves of this plant are fragrant if crumpled."},
+
+{n:35,common:"False Sunflower",sci:"Heliopsis helianthoides",blooms:"Late Summer (July – August)",months:[7,8],host:"Ground-nesting Bees",tags:["bees"],credit:"Yael Weiss",photo:"35.jpg",
+ desc:"False Sunflower is a bright yellow perennial. Flowers bloom on tall stalks that are rough to the touch and may be covered in aphids. Cone-shaped centers are brownish in color. Leaves are serrated and arranged opposite. Foliage is bright green and may sometimes be hairy. Seeds of this plant become forage options for birds in the colder months, especially finches.",
+ fact:"This plant was once used medically to treat fevers, Malaria and even lung issues."},
+
+{n:36,common:"Downy Wood Mint",sci:"Blephilia ciliata",blooms:"Summer (June – July)",months:[6,7],host:"Bees",tags:["bees"],credit:"Yael Weiss",photo:"36.jpg",
+ desc:"Downy Wood Mint has stacked blooms of lavender flowers. Each flower has two lips with reddish purple spots on the lower lip. Flowers are hairy and bloom atop hairy stems. Leaves are smooth and arranged oppositely (in pairs, down the stem). If by late summer the foliage appears slightly unkempt, it may be because insects favor chewing the leaves.",
+ fact:"Given the shape of these flowers, both long-tongued and short-tongued bees can access its nectar."},
+
+{n:37,common:"Wild Quinine",sci:"Parthenium integrifolium",blooms:"Summer (June – July)",months:[6,7],host:"Bees and Flies",tags:["bees"],credit:"Yael Weiss",photo:"37.jpg",
+ desc:"Wild Quinine is flat-topped and blooms in white. Tiny clusters of dense flowers make up this perennial. The flowers are only at the top of the plant and take on an appearance that is similar to cauliflower. Leaves are aromatic, toothless and are bigger at the base. The texture of the leaves is also rough.",
+ fact:"This flower was used in World War I by the U.S. Army to treat Malaria amongst their troops."},
+
+{n:38,common:"Wild Bee Balm",sci:"Monarda fistulosa",blooms:"Summer (June – July)",months:[6,7],host:"Bumble Bees and Hummingbirds",tags:["bees","hummingbirds"],credit:"Yael Weiss",photo:"38.jpg",
+ desc:"Wild Bee Balm has lavender flowers that grow in clusters. Each cluster could be up to 50 flowers. Flowers are tubular and overall, have a tattered pom-pom shape. Stems of this plant are square. Foliage has small hairs on both the top and bottom side of the leaf. Leaves are also serrated. Birds will visit in autumn and winter, to forage on its seeds.",
+ fact:"The foliage of this plant smells like oregano."},
+
+{n:39,common:"Heath Aster",sci:"Symphyotrichum ericoides",blooms:"Fall (September – October)",months:[9,10],host:"Pearl Crescent Butterflies",tags:["butterflies"],credit:"Yael Weiss",photo:"39.jpg",
+ desc:"Heath Asters are a spindly plant with crowded clusters of white flowers. The centers of the flowers start off yellow but turn red as the plant ages. The stalks of the Heath Aster are hairy. Leaves are pointed and needle-like. This plant spreads via rhizomes and prefers a habitat with drier soil. Seeds of this aster have white hairs which help it disperse.",
+ fact:"Monarchs depend on this flower for forage while making their migration journey down to Mexico."},
+
+{n:40,common:"Carolina Lupine",sci:"Thermopsis villosa",blooms:"Spring (May – June)",months:[5,6],host:"Bees",tags:["bees"],credit:"Yael Weiss",photo:"40.jpg",
+ desc:"Carolina Lupine is a tall growing plant with vertical blooms of yellow flowers. Stalks grow in clusters providing dense cover in a garden setting. This plant has a long tap root. Foliage is grayish-green with a velvet feel. Hairy seedpods will form and open up anywhere between July to September. T. villosa grows best in full sun.",
+ fact:"Carolina Lupine’s tap root makes it impossible to move and transplant elsewhere."},
+
+{n:41,common:"Culver’s Root",sci:"Veronicastrum virginicum",blooms:"Late Spring (June)",months:[6],host:"Common Buckeye Butterflies",tags:["butterflies"],credit:"Yael Weiss",photo:"41.jpg",
+ desc:"Culver’s Root is a plant that has white flowers blooming on long slender spikes. Sometimes these spikes take on a “crown-like” shape. Flowers will open up and bloom from the bottom first. Toothed and slender green leaves grow whorled around a single stem. Stems can grow up to 6 feet tall; it is common for Culver’s Root to flop over. The flower of this plant is odorless. It also does best in full sun.",
+ fact:"This plant is named after Dr. Culver, who used this plant for medicinal purposes."},
+
+{n:42,common:"Calico Beardtongue",sci:"Penstemon calycosus",blooms:"Late Spring / Early Summer (June)",months:[6],host:"Long-tongued Bees and Hummingbirds",tags:["bees","hummingbirds"],credit:"wildflower.org",photo:"42.jpg",
+ desc:"Calico Beardtongue blooms are white or sometimes lavender. The shape of the flower is tubular. Foliage is toothed, green and can be found opposite each other along the stems. This beardtongue is different from other beardtongues (such as the Foxglove Beardtongue) because it is more tolerant of shade and shorter in size.",
+ fact:"In addition to providing nectar to a number of diverse pollinators, the leaves of this plant also provide forage for moth larvae."},
+
+{n:43,common:"Pennsylvania Sedge",sci:"Carex pensylvanica",blooms:"",months:[],host:"Caterpillars",tags:["butterflies","moths","shrub"],form:"Sedge — grass-like groundcover",credit:"wildflower.org",photo:"43.jpg",
+ desc:"Pennsylvania Sedge is a lush grass-like plant. Leaves grow in a fountain shape, low to the ground, and change color throughout the seasons (light green in spring, tan in autumn). Seeds can be found in clusters along a high stem. This plant blooms tiny cream colored flowers, but they are not plentiful or showy. When it is used as ground cover close to trees, C. pensylvanica often provides a soft safe refuge for caterpillars (that depend on trees during their life cycle).",
+ fact:"Is a great companion plant near Oak trees."},
+
+{n:44,common:"Stiff Goldenrod",sci:"Oligoneuron rigidum",blooms:"Late Summer (July – August)",months:[7,8],host:"Bees and Beetles",tags:["bees"],credit:"Yael Weiss",photo:"44.jpg",
+ desc:"Stiff Goldenrod is a goldenrod with a flatter top. Flowers are yellow and bloom in clusters. Each flower has half a dozen or more rounded petals. At the center of that flower are numerous florets. Foliage is round and grayish-green. Bottom leaves are rough in texture. Stiff Goldenrod stems do not branch and can grow up to 5 feet.",
+ fact:"Leaves on the midpoint of the stem are different from the base leaves. They are stiff, which explains the name of this plant."},
+
+{n:45,common:"Heart Leaf Aster",sci:"Symphyotrichum cordifolium",blooms:"Fall (September – October)",months:[9,10],host:"Pearl Crescent Butterflies",tags:["butterflies"],credit:"wildflower.org",photo:"45.jpg",
+ desc:"Heart Leaf Aster is a perennial that blooms pale blue flowers. At the center of the ray flowers are smaller disc flowers that are yellow. Foliage is toothed and alternate. Leaves at the base take on a heart-shaped appearance. This plant grows prolifically, to the point that it could be considered weedy. This aster grows to be about 3 feet.",
+ fact:"This aster is one of the first plants to be documented in the Americas. References date back to the early 17th century."},
+
+{n:46,common:"Hoary Scullcap",sci:"Scuttelaria incana",blooms:"Summer (June – July)",months:[6,7],host:"Moths",tags:["moths"],credit:"wildflower.org",photo:"46.jpg",
+ desc:"Hoary Scullcap blooms blueish purple. Flowers are tubular and lipped (the upper one looks like a hood and the lower lip shows a noticeable white spot). Flowers are atop a squarish stem. The foliage on this plant is toothed and oval-shaped. Leaves have small hairs as well. The flower itself does not have a distinct aroma.",
+ fact:"Foliage is bitter in taste so it is deer-resistant."},
+
+{n:47,common:"Indian Physic",sci:"Gillenia stipulata",blooms:"",months:[],host:"Butterflies",tags:["butterflies"],credit:"wildflower.org",photo:"47.jpg",
+ desc:"Indian Physic is a delicate plant that grows in full sun. Mass plantings of this species will help it grow best. Flowers have five white petals. Leaves are elongated, green and are described as fern-like. The stems of this plant are thin, red and branching. Fruiting begins at the end of summer and lasts till autumn. Colder temperatures also create a change in foliage color, from green to red or bronze.",
+ fact:"This plant is used for treating bee stings."},
+
+{n:48,common:"Queen of the Prairie",sci:"Filipendula rubra",blooms:"Early Summer (June – July)",months:[6,7],host:"Bees and Flies",tags:["bees"],credit:"wildflower.org",photo:"48.jpg",
+ desc:"Queen of the Prairie is a showy perennial. Tiny flowers bloom in an abundant arrangement of pink. Multiple stamens give the flower a bushy appearance. Foliage is also ornate, pointy, lobed and bright green in color. These leaves look similar to Maple leaves. Stems of this plant are sometimes red in color. Seeds are very small.",
+ fact:"This flower only attracts pollinators who feed on pollen (since this plant does not produce nectar)."},
+
+{n:49,common:"Coastal Plain Joe Pye Weed",sci:"Eutrochium dubium",blooms:"Late Summer (July – August)",months:[7,8],host:"Skippers and Swallowtail Butterflies",tags:["butterflies"],credit:"Yael Weiss",photo:"49.jpg",
+ desc:"Joe Pye Weed makes a great border for the back of gardens, considering this plant grows anywhere from 6 to 10 feet tall. Joe Pye Weed grows best in moist conditions. Flowers are a dull pink and grow in fluffy, dome-shaped clusters. Leaves are dark green. Stems are pinkish. This plant provides habitat for birds; Goldfinches and Sparrows can be seen feeding on the seeds of this plant, later in the season.",
+ fact:"Leaves have an aroma of vanilla."},
+
+{n:50,common:"Showy Goldenrod",sci:"Solidago speciosa",blooms:"Fall (September – October)",months:[9,10],host:"Bumble Bees and Sweat Bees",tags:["bees"],credit:"wildflower.org",photo:"50.jpg",
+ desc:"Showy Goldenrod is a perennial that is strikingly bright. Clusters are considered denser than Zig Zag Goldenrod. Flowers bloom yellow and have up to 10 rays. The blooms have a feathery appearance atop red stems. Leaves are very narrow, but get larger at the base. This perennial will remain fluffy in autumn months when it goes to seed.",
+ fact:"Despite having only a few stems, each plant can have about three hundred flowers."},
+
+{n:51,common:"Steeplebush",sci:"Spirea tomentosa",blooms:"Late Summer (July – September)",months:[7,8,9],host:"Moths",tags:["moths","shrub"],form:"Shrub",credit:"wildflower.org",photo:"51.jpg",
+ desc:"Steeplebush is a showy shrub. It produces stems that can reach up to 5 feet tall. Flowers bloom pinkish-purple. These flowers are found in slender clusters that tower over the plant. Foliage starts off green, but becomes reddish-yellow in the autumn months. Leaves have hair on the underside and are also toothed.",
+ fact:"The hair on the leaves of this plant can be white or brown and looks like fur. This is also called “tomentum”."},
+
+{n:52,common:"Blue Mistflower",sci:"Conoclinium coelestinum",blooms:"Late Summer (July – August)",months:[7,8],host:"Butterflies",tags:["butterflies"],credit:"Yael Weiss",photo:"52.jpg",
+ desc:"Blue Mistflower is a plant with fluffy clusters of blueish-lavender flowers. The leaves of this plant are toothed and triangular. Blue Mistflower is a good choice for groundcover, as it grows fast and in dense patches. This is the result of self seeding and rhizomes (stems underground that produce shoots). Blue Mistflower also has a long blooming period, making it a helpful resource to butterflies searching for nectar later in the season.",
+ fact:"Leaves of this plant have a bitter taste and are therefore deer-resistant."},
+
+{n:53,common:"Swamp Milkweed",sci:"Asclepias incarnata",blooms:"Summer (June – July)",months:[6,7],host:"Monarch Butterfly (larvae) — critical",tags:["monarch","butterflies"],credit:"Yael Weiss",photo:"53.jpg",
+ desc:"Swamp Milkweed grows in wet soil and thrives in marsh habitats. Flowers are arranged in clusters and can be a light or deep pink color. Foliage of Swamp Milkweed is narrow, arranged oppositely and green (however, leaves will become darker red as the season progresses). This plant is a critical source for Monarchs throughout its lifecycle; eggs are laid on flower buds and foliage, leaves provide food for larvae and adult Monarchs will feed on the flower nectar.",
+ fact:"The flowers of Swamp Milkweed have an aroma similar to cinnamon."},
+
+{n:54,common:"Hairy Beardtongue",sci:"Penstemon hirsutus",blooms:"Late Spring / Early Summer (May – June)",months:[5,6],host:"Baltimore Checkerspot Butterflies and Hummingbirds",tags:["butterflies","hummingbirds"],credit:"wildflower.org",photo:"54.jpg",
+ desc:"Hairy Beardtongue is a compact plant with clusters of slender, lavender flowers. Flowers are trumpet-shaped, have white at the tips and appear closed at the end. When in bloom, flowers will droop. Stems are red and covered in tiny white hairs. Leaves are hairy, toothed and green. Stems and leaves will remain through winter but turn bronze.",
+ fact:"Only pollinators with a long tongue can access the nectar inside these flowers."}
+];
+
+/* One job per season. */
+const CARE = [
+  {when:'Spring',       months:[3,4,5],   job:'Cut back',  note:"Last year's stalks come down now."},
+  {when:'Summer',       months:[6,7,8],   job:'Weed'},
+  {when:'Fall',         months:[9,10,11], job:'Prune'},
+  {when:'Winter',       months:[12,1,2],  job:'Leave it',  note:'The stalks rest standing. They are habitat for many beneficial insects.'}
+];
+
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MON=new Date().getMonth()+1;
+
+/* The map labels each bed as "32 Ger car" — number plus the first three
+   letters of genus and species. Derive it so search can match it. */
+const code=p=>p.sci.replace(/[^A-Za-z ]/g,'').split(/\s+/).slice(0,2)
+  .map((w,i)=>i?w.slice(0,3).toLowerCase():w.slice(0,3)).join(' ');
+
+/* care */
+$('#seasons').innerHTML=CARE.map(s=>`
+  <div class="s${s.months.includes(MON)?' now':''}">
+    <p class="when">${esc(s.when)}${s.months.includes(MON)?' &middot; now':''}</p>
+    <p class="job">${esc(s.job)}</p>
+    ${s.note?`<p class="note" style="margin-bottom:0">${esc(s.note)}</p>`:''}
+  </div>`).join('');
+
+/* map */
+$('#strips').innerHTML=[1,2,3].map(m=>`
+  <div class="strip">
+    <h3>${m===1?'West end':m===3?'East end':'Middle'}</h3>
+    <div class="scroll"><div class="ph" data-m="${m}">Save the map crop here as map${m}.jpg</div></div>
+  </div>`).join('');
+[1,2,3].forEach(m=>{
+  const img=new Image();
+  img.onload=()=>{const ph=$(`.ph[data-m="${m}"]`);
+    if(ph){img.alt=`Garden map, section ${m} of 3`;ph.replaceWith(img)}};
+  img.src=`map${m}.jpg`;
+});
+
+/* A few beds are painted with a label that does not match the plant list.
+   Search what the sign says, get the plant that is actually there. */
+const PAINTED={'ger cal':32,'min fis':38,'54 hel ang':10,'24 rudbeckia maxima':25};
+
+function haystack(p){
+  const extra=Object.entries(PAINTED).filter(([,n])=>n===p.n).map(([k])=>k).join(' ');
+  return (p.n+' '+p.common+' '+p.sci+' '+code(p)+' '+p.host+' '+extra).toLowerCase();
+}
+
+/* list */
+function renderIdx(){
+  const q=$('#search').value.trim().toLowerCase();
+  const terms=q.split(/\s+/).filter(Boolean);
+  const list=PLANTS.filter(p=>{
+    if(!terms.length) return true;
+    const h=haystack(p);
+    return terms.every(t=>h.includes(t));
+  });
+  $('#idx').innerHTML=list.map(p=>`<button data-n="${p.n}">
+    <span class="n">${p.n}</span>
+    <span class="nm">${esc(p.common)}<em>${esc(p.sci)}</em></span></button>`).join('')
+    || '<p class="note">Nothing matches that.</p>';
+  $$('#idx button').forEach(b=>b.addEventListener('click',()=>openPlant(+b.dataset.n)));
+}
+$('#search').addEventListener('input',renderIdx);
+
+/* plant */
+function openPlant(n){
+  const p=PLANTS.find(x=>x.n===n); if(!p) return;
+  $('#pv').innerHTML=`
+    ${p.photo?`<img src="photos/${p.photo}" alt="${esc(p.common)}">`
+             :`<div class="photoph">Photo to come</div>`}
+    <h2>${esc(p.common)}</h2>
+    <p class="sci"><i>${esc(p.sci)}</i> &nbsp;&middot;&nbsp; map label ${p.n} ${esc(code(p))}</p>
+    <div class="facts">
+      ${p.blooms?`<div class="fact"><span class="k">Blooms</span><span>${esc(p.blooms)}</span></div>`:''}
+      ${p.host?`<div class="fact"><span class="k">Supports</span><span>${esc(p.host)}</span></div>`:''}
+    </div>
+    <p>${esc(p.desc)}</p>
+    ${p.fact?`<div class="funfact">${esc(p.fact)}</div>`:''}
+    <p class="credit">Photo: ${esc(p.credit||'not recorded')}. Description from the park's Pollinator Pathway guide; original reference sources pending.</p>`;
+  $('#view').classList.add('open');
+  document.body.style.overflow='hidden';
+  $('#view').scrollTop=0;
+  location.hash='p'+n;
+}
+function closePlant(){
+  $('#view').classList.remove('open');
+  document.body.style.overflow='';
+  history.replaceState(null,'',location.pathname);
+}
+$('#back').addEventListener('click',closePlant);
+addEventListener('keydown',e=>{if(e.key==='Escape')closePlant()});
+addEventListener('hashchange',()=>{if(!location.hash)closePlant()});
+
+renderIdx();
+if(/^#p\d+$/.test(location.hash)) openPlant(+location.hash.slice(2));
+</script>
+</body>
+</html>
