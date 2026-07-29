@@ -170,7 +170,18 @@
   .fact .k{flex:0 0 92px;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
     color:var(--ink-soft);font-weight:700;padding-top:2px}
   .funfact{background:var(--green-pale);border-radius:10px;padding:13px 15px;font-size:.93rem;margin:18px 0 0}
-  .credit{border-top:1px solid var(--line);margin-top:24px;padding-top:14px;
+  .sources{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+  .sources h3{margin:0 0 10px;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700}
+  .sources a{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+    padding:9px 12px;margin-bottom:6px;border:1px solid var(--line);border-radius:var(--r);
+    text-decoration:none;color:var(--green-mid);font-size:.92rem;
+    transition:border-color .12s,background .12s}
+  .sources a:hover,.sources a:focus-visible{border-color:var(--green-mid);background:var(--green-pale)}
+  .sources a b{font-weight:700}
+  .sources a em{font-style:normal;color:var(--ink-soft);font-size:.82rem}
+  .sources .fix{margin:8px 0 0;font-size:.8rem;color:var(--ink-soft)}
+  .credit{border-top:1px solid var(--line);margin-top:20px;padding-top:14px;
     font-size:.82rem;color:var(--ink-soft)}
 
   .cta{background:var(--green);color:#fff;border-radius:var(--r);padding:26px 24px;text-align:center}
@@ -648,6 +659,34 @@ function renderIdx(){
 $('#search').addEventListener('input',renderIdx);
 
 /* plant */
+/* Six scientific names were transcribed with a slip in the original document
+   and one carries a variety. Searches are built from the accepted spelling,
+   or the databases return nothing. The page still shows the name as written. */
+const SEARCH_NAME={7:'Eurybia macrophylla',8:'Solidago flexicaulis',
+  17:'Persicaria virginiana',21:'Physostegia virginiana',33:'Asclepias incarnata',
+  46:'Scutellaria incana',51:'Spiraea tomentosa'};
+
+/* Three databases, each checked to make sure the species name in the URL
+   actually reaches a record rather than an empty search form. */
+function sourcesHTML(p){
+  const q=SEARCH_NAME[p.n]||p.sci;
+  const e=encodeURIComponent(q);
+  const links=[
+    ['Go Botany','New England flora, Native Plant Trust',
+     `https://gobotany.nativeplanttrust.org/search/?q=${encodeURIComponent(q).replace(/%20/g,'+')}`],
+    ['World Flora Online','accepted name and synonyms',
+     `https://www.worldfloraonline.org/search?query=${e.replace(/%20/g,'+')}`],
+    ['Wikipedia','general description',
+     `https://en.wikipedia.org/wiki/${encodeURIComponent(q.replace(/ /g,'_'))}`]
+  ];
+  return `<div class="sources">
+    <h3>Look this plant up</h3>
+    ${links.map(([n,d,u])=>`<a href="${u}" target="_blank" rel="noopener">
+      <b>${esc(n)}</b><em>${esc(d)}</em></a>`).join('')}
+    ${SEARCH_NAME[p.n]?`<p class="fix">Searched as <i>${esc(q)}</i>, the name these databases index it under.</p>`:''}
+  </div>`;
+}
+
 function openPlant(n){
   const p=PLANTS.find(x=>x.n===n); if(!p) return;
   $('#pv').innerHTML=`
@@ -661,7 +700,8 @@ function openPlant(n){
     </div>
     <p>${esc(p.desc)}</p>
     ${p.fact?`<div class="funfact">${esc(p.fact)}</div>`:''}
-    <p class="credit">Photo: ${esc(p.credit||'not recorded')}. Description from the park's Pollinator Pathway guide; original reference sources pending.</p>`;
+    ${sourcesHTML(p)}
+    <p class="credit">Photo: ${esc(p.credit||'not recorded')}. Description from the park's Pollinator Pathway guide; its own reference sources were not recorded and are being reconstructed. The databases above are places to read further, not the source of the text above.</p>`;
   $('#view').classList.add('open');
   document.body.style.overflow='hidden';
   $('#view').scrollTop=0;
